@@ -1,16 +1,11 @@
 import numpy as np
 import cv2
-# import pylab
-# import imageio
 
 import matplotlib.pyplot as plt
-# import matplotlib.image as mpimg
 
 from scipy.stats import rankdata
 
-# cat_cascade = cv2.CascadeClassifier('haarcascade_frontalcatface.xml')
 cat_ext_cascade = cv2.CascadeClassifier('haarcascade_frontalcatface_extended.xml')
-# eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
 # https://blogs.oracle.com/meena/cat-face-detection-using-opencv
@@ -63,6 +58,6 @@ def score_video(sharpness_list, ratio_list):
     return np.argmax(rankdata(-np.abs(np.subtract(ratio_list, 0.05)) + rankdata(sharpness_list)))
 
 if __name__ == "__main__":
-    processed_video = process_video("videos/MVI_3414.MP4", output_frames=True)
+    processed_video = process_video("initial_exploration/videos/MVI_3414.MP4", output_frames=True)
     plt.imshow(processed_video[-1][score_video(processed_video[3], processed_video[4])])
     plt.show()
