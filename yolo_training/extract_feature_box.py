@@ -66,8 +66,7 @@ def get_eyes_and_nose(feature_points):
     # Now, let's get mouths
     mouth = feature_points[2]
 
-
-    return ((left_eye[0] - radius, left_eye[1] - radius, left_eye[0] + radius, left_eye][1] + radius, 0), (right_eye[0] - radius, right_eye[1] - radius, right_eye[0] + radius, right_eye][1] + radius, 0), (mouth[0] - (2 * radius), mouth[1] - radius, mouth[0] + (2 * radius), mouth[1] + radius, 1))
+    return ((left_eye[0] - radius, left_eye[1] - radius, left_eye[0] + radius, left_eye[1] + radius, 0), (right_eye[0] - radius, right_eye[1] - radius, right_eye[0] + radius, right_eye[1] + radius, 0), (mouth[0] - (2 * radius), mouth[1] - radius, mouth[0] + (2 * radius), mouth[1] + radius, 1))
 
 
 if __name__ == "__main__":
