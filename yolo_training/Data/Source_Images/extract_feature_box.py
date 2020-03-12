@@ -99,5 +99,5 @@ if __name__ == "__main__":
                     ("/".join((cwd, dir_name, file_name[:-4])), left_ear, right_ear, left_eye, right_eye, nose),
                 ))
 
-    with open("../data_train.txt", 'w') as output_file:
+    with open("data_train.txt", 'w') as output_file:
         output_file.write("\n".join(output_list))
