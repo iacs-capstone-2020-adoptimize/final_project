@@ -45,7 +45,7 @@ def get_ears(feature_points):
     x_max_right = max(feature_points[6][0], feature_points[7][0], feature_points[8][0])
     y_min_right = min(feature_points[6][1], feature_points[7][1], feature_points[8][1])
     y_max_right = max(feature_points[6][1], feature_points[7][1], feature_points[8][1])
-    return (x_min_left, y_min_left, x_max_left, y_max_left), (x_min_right, y_min_right, x_max_right, y_max_right, 2)
+    return (x_min_left, y_min_left, x_max_left, y_max_left, 2), (x_min_right, y_min_right, x_max_right, y_max_right, 2)
 
 
 def get_eyes_and_nose(feature_points):
@@ -83,8 +83,8 @@ if __name__ == "__main__":
                 # head_str = ",".join(str(point) for point in get_head(points)) + ",0
 
                 # These are the points for the bounding boxes
-                left_ear, right_ear = [",".join(str(point) for point in ear) for ear in get_ears(points)]
                 left_eye, right_eye, nose = [",".join(str(point) for point in feature) for feature in get_eyes_and_nose(points)]
+                left_ear, right_ear = [",".join(str(point) for point in ear) for ear in get_ears(points)]
 
                 output_list.append(" ".join(
                     ("/".join((cwd, dir_name, file_name[:-4])), left_ear, right_ear, left_eye, right_eye, nose),
