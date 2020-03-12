@@ -20,7 +20,11 @@ def get_points(path):
             raise ValueError
         else:
             split_str = string.split()[1:]
-            return tuple((int(loc_x), int(loc_y)) for loc_x, loc_y in zip(split_str[::2], split_str[1::2]))
+            results =  tuple((int(loc_x), int(loc_y)) for loc_x, loc_y in zip(split_str[::2], split_str[1::2]))
+            for result in results:
+                if result[0] < 0 or result[1] < 0:
+                    raise ValueError
+            return results
 
 #
 # def get_head(feature_points):
@@ -77,7 +81,12 @@ if __name__ == "__main__":
         dir_name = "CAT_{:02d}".format(i)
         for file_name in os.listdir(dir_name):
             if file_name[-4:] == ".cat":
-                points = get_points(dir_name + "/" + file_name)
+                try:
+                    points = get_points(dir_name + "/" + file_name)
+                except:
+                    print("Found negative value; skipping image")
+                    continue
+
                 # For now, we're going to try to detect the various features of a cat instead of the whole
                 # head, so we will comment out the line of code grabbing the entire head.
                 # head_str = ",".join(str(point) for point in get_head(points)) + ",0
