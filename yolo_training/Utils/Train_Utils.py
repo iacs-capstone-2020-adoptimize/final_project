@@ -212,7 +212,7 @@ def data_generator_wrapper(
     )
 
 
-def ChangeToOtherMachine(filelist, repo="TrainYourOwnYOLO", remote_machine=""):
+def ChangeToOtherMachine(filelist, repo="yolo_training", remote_machine=""):
     """
     Takes a list of file_names located in a repo and changes it to the local machines file names. File must be executed from withing the repository
 

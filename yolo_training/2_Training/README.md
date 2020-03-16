@@ -1,7 +1,7 @@
 # TrainYourOwnYOLO: Training
 
 ## Training
-Using the training images located in [`TrainYourOwnYOLO/Data/Source_Images/Training_Images`](/Data/Source_Images/Training_Images) and the annotation file [`data_train.txt`](/Data/Source_Images/Training_Images/vott-csv-export) which we have created in the [previous step](/1_Image_Annotation/) we are now ready to train our YOLOv3 detector. 
+We used the CAT dataset available here[https://www.kaggle.com/crawford/cat-dataset] or here[https://archive.org/details/CAT_DATASET]. (Careful that CAT_00/00000003_015.jpg and CAT_00/00000003_019.jpg.cat should be ignored as the first is missing the label and the second is missing the image.) Move the data files so that CAT_00 through CAST_06 are in the [Source_Images](/yolo_training/Data/Source_Images) directory. Run `extract_feature_box.py` to create the annotation file.
 
 ## Download and Convert Pre-Trained Weights
 Before getting started download the pre-trained YOLOv3 weights and convert them to the keras format. To run both steps run the download and conversion script from within the [`TrainYourOwnYOLO/2_Training`](/2_Training/) directory:
@@ -9,7 +9,6 @@ Before getting started download the pre-trained YOLOv3 weights and convert them 
 ```
 python Download_and_Convert_YOLO_weights.py
 ```
-To list available command line options run `python Download_and_Convert_YOLO_weights.py -h`.
 
 The weights are pre-trained on the [ImageNet 1000 dataset](http://image-net.org/challenges/LSVRC/2015/index) and thus work well for object detection tasks that are very similar to the types of images and objects in the ImageNet 1000 dataset.
 
