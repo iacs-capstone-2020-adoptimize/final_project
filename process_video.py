@@ -64,6 +64,8 @@ def score_video(processed_video):
     """
     Returns the frame number of the best picture as determined by our developed model.
     """
+    if len(processed_video["cat_detected_frames"]) == 0:
+        raise ValueError("No cats found")
     return processed_video["cat_detected_frames"][ # Of the frames where a cat head was detected
         np.argmax(rankdata(-np.abs(np.subtract(processed_video["head_ratio"], 0.05))  # get the one that scored highest
                            + rankdata(processed_video["sharpness"])))
@@ -74,6 +76,8 @@ def score_video_baseline(processed_video):
     """
     Returns the frame number for baseline model.
     """
+    if len(processed_video["cat_detected_frames"]) == 0:
+        raise ValueError("No cats found")
     return processed_video["cat_detected_frames"][np.random.randint(len(processed_video["cat_detected_frames"]))]
 
 
@@ -85,13 +89,15 @@ if __name__ == "__main__":
     processed_video = get_features(test_video)
     baseline_image = score_video_baseline(processed_video)
     chosen_image = score_video(processed_video)
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.8, 4.8))
-    ax1.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", baseline_image))
-    ax1.set_title("Image 1")
-    ax1.set_axis_off()
-    ax2.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", chosen_image))
-    ax2.set_title("Image 2")
-    ax2.set_axis_off()
+    fig, ax = plt.subplots(2, 2, figsize=(12.8, 4.8))
+    ax[0, 0].imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", baseline_image))
+    ax[0, 0].set_title("Image 1")
+    ax[0, 0].set_axis_off()
+    ax[0, 1].imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", chosen_image))
+    ax[0, 1].set_title("Image 2")
+    ax[0, 1].set_axis_off()
+    button_2 = Button(ax[1, 1], "Image 2 is Better")
     fig.suptitle("Which Image is Better?")
+
 
     plt.show()

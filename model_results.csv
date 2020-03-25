@@ -1,1 +1,7 @@
-video_name, video_number, frame_developed_model, frame_baseline_model
+video_name,video_number,frame_developed_model,frame_baseline_model
+cat21.mp4,21,10,220
+cat20.mp4,20,1600,1600
+cat8.mp4,8,170,10
+cat22.mp4,22,460,770
+cat23.mp4,23,630,630
+cat9.mp4,9,280,280
