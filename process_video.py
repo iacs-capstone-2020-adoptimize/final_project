@@ -25,7 +25,7 @@ def get_frame(filename, frame_number):
     return frame
 
 
-def extract_features(filename, sample_rate=10, output_frames=False):
+def get_features(filename, sample_rate=10, output_frames=False):
     capture = cv2.VideoCapture(filename)
     head_frames = list()  # Images for each frame where head detected; only returned if output_frames
     frame_count = 0  # Total number of frames
@@ -61,18 +61,31 @@ def extract_features(filename, sample_rate=10, output_frames=False):
 
 
 def score_video(processed_video):
-    return np.argmax(rankdata(-np.abs(np.subtract(processed_video["head_ratio"], 0.05))
-                              + rankdata(processed_video["sharpness"])))
+    return processed_video["cat_detected_frames"][ # Of the frames where a cat head was detected
+        np.argmax(rankdata(-np.abs(np.subtract(processed_video["head_ratio"], 0.05))  # get the one that scored highest
+                           + rankdata(processed_video["sharpness"])))
+    ]
 
 
 def score_video_baseline(processed_video):
-    return np.random.randint(len(processed_video["cat_detected_frames"]))
+    return processed_video["cat_detected_frames"][np.random.randint(len(processed_video["cat_detected_frames"]))]
 
 
 if __name__ == "__main__":
+    from matplotlib.widgets import Button
     # processed_video = extract_features("initial_exploration/videos/MVI_3414.MP4", output_frames=True)
     # plt.imshow(processed_video["head_frames"][score_video(processed_video)])
+    test_video = "initial_exploration/videos/MVI_3414.MP4"
+    processed_video = get_features(test_video)
+    baseline_image = score_video_baseline(processed_video)
+    chosen_image = score_video(processed_video)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.8, 4.8))
-    ax1.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", 0))
-    ax2.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", 10))
+    ax1.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", baseline_image))
+    ax1.set_title("Image 1")
+    ax1.set_axis_off()
+    ax2.imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", chosen_image))
+    ax2.set_title("Image 2")
+    ax2.set_axis_off()
+    fig.suptitle("Which Image is Better?")
+
     plt.show()
