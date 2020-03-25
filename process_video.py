@@ -61,6 +61,9 @@ def get_features(filename, sample_rate=10, output_frames=False):
 
 
 def score_video(processed_video):
+    """
+    Returns the frame number of the best picture as determined by our developed model.
+    """
     return processed_video["cat_detected_frames"][ # Of the frames where a cat head was detected
         np.argmax(rankdata(-np.abs(np.subtract(processed_video["head_ratio"], 0.05))  # get the one that scored highest
                            + rankdata(processed_video["sharpness"])))
@@ -68,6 +71,9 @@ def score_video(processed_video):
 
 
 def score_video_baseline(processed_video):
+    """
+    Returns the frame number for baseline model.
+    """
     return processed_video["cat_detected_frames"][np.random.randint(len(processed_video["cat_detected_frames"]))]
 
 
