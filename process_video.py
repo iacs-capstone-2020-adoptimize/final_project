@@ -20,8 +20,11 @@ def sharpness_score(gray_img):
 
 def get_frame(filename, frame_number):
     capture = cv2.VideoCapture(filename)
-    capture.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
-    status, frame = capture.read()
+    # I'm not sure why this doesn't work (or at least doesn't always work)
+    # capture.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    # status, frame = capture.read()
+    for i in range(frame_number + 1):
+        status, frame = capture.read()
     return frame
 
 
