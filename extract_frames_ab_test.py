@@ -16,16 +16,17 @@ video_name, video_number, frame_developed_model, frame_baseline_model
 "cat1.mp4", 1, 34, 12
 """
 
-rows_dict = pd.read_csv(results_file).to_dict(orient="list")
+rows_df = pd.read_csv(results_file)
 
 for filename in os.listdir(directory):
-    if filename[-4:].lower() == ".mp4" and filename not in rows_dict["video_name"]:
+    if filename[-4:].lower() == ".mp4" and filename not in rows_df["video_name"].values:
+        new_row = dict()
         # print(rows_dict)
         # print(filename)
         file_path = f"{directory}/{filename}"
         print(file_path)
         try:
-            processed_video = get_features(file_path)
+            processed_video = get_features(file_path, sample_rate=1)
             developed_model_output = score_video(processed_video)
             baseline_output = score_video_baseline(processed_video)
         except ValueError:
@@ -33,10 +34,9 @@ for filename in os.listdir(directory):
 
         video_number = int(filename.split(".")[0][3:])
 
-        rows_dict["video_name"].append(filename)
-        rows_dict["video_number"].append(video_number)
-        rows_dict["frame_developed_model"].append(developed_model_output)
-        rows_dict["frame_baseline_model"].append(baseline_output)
-        rows_df = pd.DataFrame(rows_dict)
+        rows_df = rows_df.append({
+            "video_name": filename, "frame_baseline_model": baseline_output,
+            "frame_developed_model": developed_model_output
+        }, ignore_index=True)
         rows_df.to_csv(results_file, index=False)
         print("Saved to CSV", filename)

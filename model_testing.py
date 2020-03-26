@@ -28,21 +28,21 @@ def ab_test(userid, model_csv, output_filename):
     test_results = list()
     model_df = pd.read_csv(model_csv)
     directory = "videos"
-    def clicked_image(event, video_number, chosen_image):
-        test_results.append("{},{},{}".format(userid, video_number, chosen_image))
+    def clicked_image(event, video_name, chosen_image):
+        test_results.append("{},{},{}".format(userid, video_name, chosen_image))
         plt.close()
 
     for index, video in model_df.iterrows():
         if video["frame_developed_model"] == video["frame_baseline_model"]:
             continue
-        # 0 corresponds to developed shown on left; 1 corresponds to developed shown on right
+        # 0 corresponds to baseline shown on left; 1 corresponds to baseline shown on right
         random_side = np.random.randint(2)
         if random_side == 0:
-            frame_left = video["frame_developed_model"]
-            frame_right = video["frame_baseline_model"]
-        else:
             frame_left = video["frame_baseline_model"]
             frame_right = video["frame_developed_model"]
+        else:
+            frame_left = video["frame_developed_model"]
+            frame_right = video["frame_baseline_model"]
 
 
         fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12.8, 4.8))
@@ -53,8 +53,8 @@ def ab_test(userid, model_csv, output_filename):
 
         button_1 = Button(plt.axes([0.20, 0.1, 0.15, 0.1]), "Image 1 is Better")
         button_1.on_clicked(
-            lambda event: clicked_image(event, video["video_number"],
-                                        "developed_model" if random_side == 0 else "baseline_model")
+            lambda event: clicked_image(event, video["video_name"],
+                                        "baseline_model" if random_side == 0 else "developed_model")
         )
         ax[1].imshow(get_frame(f"{directory}/{video['video_name']}", frame_right))
         ax[1].set_title("Image 2")
@@ -62,13 +62,13 @@ def ab_test(userid, model_csv, output_filename):
 
         button_2 = Button(plt.axes([0.65, 0.1, 0.15, 0.1]), "Image 2 is Better")
         button_2.on_clicked(
-            lambda event: clicked_image(event, video["video_number"],
-                                        "developed_model" if random_side == 1 else "baseline_model")
+            lambda event: clicked_image(event, video["video_name"],
+                                        "baseline_model" if random_side == 1 else "developed_model")
         )
 
         button_no_cat = Button(plt.axes([0.45, 0, 0.15, 0.1]), "No Cat in Either Image")
         button_no_cat.on_clicked(
-            lambda event: clicked_image(event, video["video_number"], "no_cat")
+            lambda event: clicked_image(event, video["video_name"], "no_cat")
         )
         fig.suptitle("Which Image is Better?")
         plt.show()
