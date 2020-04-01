@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
+from utils import CatVideo
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
 # https://blogs.oracle.com/meena/cat-face-detection-using-opencv
@@ -18,18 +19,8 @@ def sharpness_score(gray_img):
     return cv2.Laplacian(gray_img, ddepth=3, ksize=3).var()
 
 
-def get_frame(filename, frame_number):
-    capture = cv2.VideoCapture(filename)
-    # I'm not sure why this doesn't work (or at least doesn't always work)
-    # capture.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
-    # status, frame = capture.read()
-    for i in range(frame_number + 1):
-        status, frame = capture.read()
-    return frame
-
-
 def get_features(filename, sample_rate=10, output_frames=False):
-    capture = cv2.VideoCapture(filename)
+    video = CatVideo(filename)
     head_frames = list()  # Images for each frame where head detected; only returned if output_frames
     frame_count = 0  # Total number of frames
     cat_detected_frames = list()  # Frames in which cat head detected
@@ -37,10 +28,10 @@ def get_features(filename, sample_rate=10, output_frames=False):
     sharpness = list()  # Of cat heads detected, variance of Laplacian inside box with head
     head_ratio = list()  # Of cat heads detected, ratio of cat head size to frame size
 
-    while capture.isOpened():
-        playing, frame = capture.read()
-        if playing and frame_count % sample_rate == 0:
-            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    for frame in video.iter_all_frames():
+        if frame_count % sample_rate == 0:
+            # Be careful! cv2 has default BGR; CatVideo has default RGB
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
             cats_found = run_cascade_cat_ext(gray_frame)
             if len(cats_found) >= 1:
                 if output_frames:
@@ -49,13 +40,8 @@ def get_features(filename, sample_rate=10, output_frames=False):
                 cat_head_location.append(cats_found[0])
                 x, y, w, h = cats_found[0]  # Location of cat, assuming only one cat
                 head_ratio.append(w * h / (frame.shape[0] * frame.shape[1]))
-                sharpness.append(sharpness_score(
-                    cv2.cvtColor(frame[y: y + h, x: x + w], cv2.COLOR_BGR2GRAY)
-                ))
-        if not playing:
-            break
+                sharpness.append(sharpness_score(gray_frame[y:y + h, x:x + w]))
         frame_count += 1
-    capture.release()
     output = {"frame_count": frame_count, "cat_detected_frames": cat_detected_frames,
               "cat_head_location": cat_head_location, "sharpness": sharpness, "head_ratio": head_ratio}
     if output_frames:
@@ -85,22 +71,16 @@ def score_video_baseline(processed_video):
 
 
 if __name__ == "__main__":
-    from matplotlib.widgets import Button
-    # processed_video = extract_features("initial_exploration/videos/MVI_3414.MP4", output_frames=True)
-    # plt.imshow(processed_video["head_frames"][score_video(processed_video)])
-    test_video = "initial_exploration/videos/MVI_3414.MP4"
-    processed_video = get_features(test_video)
+    test_video = CatVideo("videos/cat1.mp4")
+    processed_video = get_features(test_video.file)
     baseline_image = score_video_baseline(processed_video)
     chosen_image = score_video(processed_video)
-    fig, ax = plt.subplots(2, 2, figsize=(12.8, 4.8))
-    ax[0, 0].imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", baseline_image))
-    ax[0, 0].set_title("Image 1")
-    ax[0, 0].set_axis_off()
-    ax[0, 1].imshow(get_frame("initial_exploration/videos/MVI_3414.MP4", chosen_image))
-    ax[0, 1].set_title("Image 2")
-    ax[0, 1].set_axis_off()
-    button_2 = Button(ax[1, 1], "Image 2 is Better")
-    fig.suptitle("Which Image is Better?")
-
+    fig, ax = plt.subplots(1, 2, figsize=(12.8, 4.8))
+    ax[0].imshow(test_video.get_frame_num(baseline_image))
+    ax[0].set_title("Baseline")
+    ax[0].set_axis_off()
+    ax[1].imshow(test_video.get_frame_num(chosen_image))
+    ax[1].set_title("Chosen")
+    ax[1].set_axis_off()
 
     plt.show()

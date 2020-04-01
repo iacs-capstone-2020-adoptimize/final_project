@@ -44,7 +44,6 @@ def ab_test(userid, model_csv, output_filename):
             frame_left = video["frame_developed_model"]
             frame_right = video["frame_baseline_model"]
 
-
         fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12.8, 4.8))
         plt.subplots_adjust(bottom=0.25)
         ax[0].imshow(get_frame(f"{directory}/{video['video_name']}", frame_left))
@@ -75,6 +74,7 @@ def ab_test(userid, model_csv, output_filename):
 
     with open(output_filename, "a") as output_file:
         output_file.write("\n".join(test_results) + "\n")
+
 
 if __name__ == "__main__":
     print("Input user:")
