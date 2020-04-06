@@ -71,9 +71,9 @@ def score_video_baseline(processed_video):
     return processed_video["cat_detected_frames"][np.random.randint(len(processed_video["cat_detected_frames"]))]
 
 def detect_cat(img):
-    cat_cascade = cv2.CascadeClassifier('haarcascade_frontalcatface.xml')
-    cat_ext_cascade = cv2.CascadeClassifier('haarcascade_frontalcatface_extended.xml')
-    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+    cat_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_frontalcatface.xml')
+    cat_ext_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_frontalcatface_extended.xml')
+    eye_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_eye.xml')
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # This function returns tuple rectangle starting coordinates x,y, width, height
     SF = 1.05
@@ -101,7 +101,26 @@ def create_data_for_model():
         cat=CatVideo("./cat_videos_1/"+filename)
         frame=cat.get_frame_time(t)
         img, cats, cats_ext, eyes = detect_cat(frame)
-        print(cats_ext)
+        head_rat = 0
+        eye_rat = 0
+        if len(cats_ext) > 0:
+            print(t)
+            print("Cat detected ^^")
+            box_cleaned = [(cats_ext[0][2], cats_ext[0][3]), (frame.shape[0], frame.shape[1])]
+            box = box_cleaned[0]
+            frame_size = box_cleaned[1]
+            box_area = box[0]*box[1]
+            frame_area = frame_size[0]*frame_size[1]
+            head_rat= box_area/frame_area
+
+        if len(eyes) > 1:
+            eye_dims = np.array([eye[2]*eye[3] for eye in eyes])
+            top_two_eyes = eye_dims[np.argsort(eye_dims)[-2:]]
+            eye_rat = top_two_eyes[1]/top_two_eyes[0]
+
+        x_values.append((eye_rat, head_rat))
+
+    print(x_values)
     return
 
 if __name__ == "__main__":
