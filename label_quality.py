@@ -41,10 +41,18 @@ if __name__ == "__main__":
                 fig.suptitle("How strongly do you agree with the following statement?\nI am more likely to adopt"
                              + " this cat after seeing this photo.")
                 button_arr = list()
-                for i, text in enumerate(["Strongly Disagree", "Disagree", "Neither Agree\nnor Disagree", "Agree",
-                                          "Strongly Agree"]):
-                    button_arr.append(Button(plt.axes([0.05 + 0.19 * i, 0.1, 0.14, 0.1]), text))
-                    button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, i + 1))
+                button_arr.append(Button(plt.axes([0.05, 0.1, 0.14, 0.1]), "Strongly Disagree"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 1))
+                button_arr.append(Button(plt.axes([0.05 + 0.13, 0.1, 0.14, 0.1]), "Disagree"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 2))
+                button_arr.append(Button(plt.axes([0.05 + 0.26, 0.1, 0.14, 0.1]), "Neither Agree\nnor Disagree"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 3))
+                button_arr.append(Button(plt.axes([0.05 + 0.39, 0.1, 0.14, 0.1]), "Agree"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 4))
+                button_arr.append(Button(plt.axes([0.05 + 0.52, 0.1, 0.14, 0.1]), "Strongly Agree"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 5))
+                button_arr.append(Button(plt.axes([0.05 + 0.65, 0.1, 0.14, 0.1]), "No Cat Found"))
+                button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, 0))
                 quit_button = Button(plt.axes([0.02, 0.02, 0.1, 0.05]), "Quit")
                 quit_button.on_clicked(quit_testing)
                 plt.show()
