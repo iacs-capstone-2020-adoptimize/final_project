@@ -49,7 +49,7 @@ if __name__ == "__main__":
                 button_1.on_clicked(lambda event: clicked_image(event, test_video_file, time, 1))
                 button_2 = Button(plt.axes([0.35, 0.1, 0.1, 0.1]), "Disagree")
                 button_2.on_clicked(lambda event: clicked_image(event, test_video_file, time, 2))
-                button_3 = Button(plt.axes([0.5, 0.1, 0.1, 0.1]), "NeitherAgree\nnor Disagree")
+                button_3 = Button(plt.axes([0.5, 0.1, 0.1, 0.1]), "Neither Agree\nnor Disagree")
                 button_3.on_clicked(lambda event: clicked_image(event, test_video_file, time, 3))
                 button_4 = Button(plt.axes([0.65, 0.1, 0.1, 0.1]), "Agree")
                 button_4.on_clicked(lambda event: clicked_image(event, test_video_file, time, 4))
