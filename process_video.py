@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
 from utils import CatVideo
+from yolo_training.Detector import detect_raw_image
 import csv
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
@@ -101,6 +102,7 @@ def create_data_for_model():
         cat=CatVideo("./cat_videos_1/"+filename)
         frame=cat.get_frame_time(t)
         img, cats, cats_ext, eyes = detect_cat(frame)
+        print(detect_raw_image(frame))
         head_rat = 0
         eye_rat = 0
         if len(cats_ext) > 0:
