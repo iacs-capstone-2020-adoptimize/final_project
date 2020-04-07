@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
-from utils import CatVideo
+from video_utils import CatVideo
+from yolo_training.Detector import detect_raw_image
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
 # https://blogs.oracle.com/meena/cat-face-detection-using-opencv
@@ -71,7 +72,6 @@ def score_video_baseline(processed_video):
 
 
 if __name__ == "__main__":
-    test_video = CatVideo("videos/cat1.mp4")
     processed_video = get_features(test_video.file)
     baseline_image = score_video_baseline(processed_video)
     chosen_image = score_video(processed_video)
