@@ -41,10 +41,20 @@ if __name__ == "__main__":
                 fig.suptitle("How strongly do you agree with the following statement?\nI am more likely to adopt"
                              + " this cat after seeing this photo.")
                 button_arr = list()
-                for i, text in enumerate(["Strongly Disagree", "Disagree", "Neither Agree\nnor Disagree", "Agree",
-                                          "Strongly Agree"]):
-                    button_arr.append(Button(plt.axes([0.05 + 0.19 * i, 0.1, 0.14, 0.1]), text))
-                    button_arr[-1].on_clicked(lambda event: clicked_image(event, test_video_file, time, i + 1))
+                # for i, text in enumerate(["Strongly Disagree", "Disagree", "Neither Agree\nnor Disagree", "Agree",
+                #                           "Strongly Agree"]):
+                button_0 = Button(plt.axes([0.05, 0.1, 0.1, 0.1]), "No Cat")
+                button_0.on_clicked(lambda event: clicked_image(event, test_video_file, time, 0))
+                button_1 = Button(plt.axes([0.2, 0.1, 0.1, 0.1]), "Strongly Disagree")
+                button_1.on_clicked(lambda event: clicked_image(event, test_video_file, time, 1))
+                button_2 = Button(plt.axes([0.35, 0.1, 0.1, 0.1]), "Disagree")
+                button_2.on_clicked(lambda event: clicked_image(event, test_video_file, time, 2))
+                button_3 = Button(plt.axes([0.5, 0.1, 0.1, 0.1]), "NeitherAgree\nnor Disagree")
+                button_3.on_clicked(lambda event: clicked_image(event, test_video_file, time, 3))
+                button_4 = Button(plt.axes([0.65, 0.1, 0.1, 0.1]), "Agree")
+                button_4.on_clicked(lambda event: clicked_image(event, test_video_file, time, 4))
+                button_5 = Button(plt.axes([0.8, 0.1, 0.1, 0.1]), "Strongly Agree")
+                button_5.on_clicked(lambda event: clicked_image(event, test_video_file, time, 5))
                 quit_button = Button(plt.axes([0.02, 0.02, 0.1, 0.05]), "Quit")
                 quit_button.on_clicked(quit_testing)
                 plt.show()
