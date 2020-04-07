@@ -133,11 +133,23 @@ class CatVideo:
         out, _ = ffmpeg.input(self.file, ss=str(frame_time), t=str(0.1), loglevel=self.loglevel).output(
             "pipe:", format="rawvideo", pix_fmt="rgb24", vframes=1
         ).run(capture_stdout=True)
-        return np.frombuffer(out, np.uint8).reshape((self.height, self.width, 3))
+        raw_image = np.frombuffer(out, np.uint8)
+        if raw_image.size == 0:
+            raise ValueError("No frames found (video must have at least one frame with"
+                             " presentation time stamp >= frame_time)")
+        else:
+            return raw_image.reshape((self.height, self.width, 3))
 
     def get_random_frame(self, seed=None):
         if seed is not None:
             np.random.seed(seed)
-        frame_time = np.random.random() * self.duration
-        return frame_time, self.get_frame_time(frame_time)
+        while True:
+            frame_time = np.random.random() * self.duration
+            try:
+                frame = self.get_frame_time(frame_time)
+            except ValueError:
+                pass
+            else:
+                break
+        return frame_time, frame
 

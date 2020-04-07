@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from matplotlib.widgets import Button
-from utils import CatVideo
+from video_utils import CatVideo
 from matplotlib import pyplot as plt
 
 
