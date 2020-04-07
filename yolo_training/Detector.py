@@ -16,6 +16,7 @@ utils_path = os.path.join(get_parent_dir(1), "Utils")
 
 sys.path.append(src_path)
 sys.path.append(utils_path)
+print(utils_path)
 
 import argparse
 from keras_yolo3.yolo import YOLO, detect_video
@@ -49,6 +50,32 @@ model_classes = os.path.join(model_folder, "data_classes.txt")
 anchors_path = os.path.join(src_path, "keras_yolo3", "model_data", "yolo_anchors.txt")
 
 FLAGS = None
+
+yolo = YOLO(
+        **{
+            "model_path": model_weights,
+            "anchors_path": anchors_path,
+            "classes_path": model_classes,
+            "score": 0.25,  # Confidence Threshold
+            "gpu_num": 1,
+            "model_image_size": (416, 416),
+        }
+    )
+
+
+def detect_raw_image(raw_image):
+    """
+
+    Args:
+        raw_image: Assumed to be 3d numpy array representing RGB image
+
+    Returns:
+        prediction: list of bounding boxes in format (xmin,ymin,xmax,ymax,class_id,confidence)
+    """
+    image_obj = Image.fromarray(raw_image)
+    prediction, _ = yolo.detect_image(image_obj, show_stats=False)
+    return prediction
+
 
 if __name__ == "__main__":
     # Delete all default flags
