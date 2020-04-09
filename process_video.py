@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
-from utils import CatVideo
+from video_utils import CatVideo
 from yolo_training.Detector import detect_raw_image
 import csv
 
