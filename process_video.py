@@ -2,9 +2,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
-from utils import CatVideo
+from video_utils import CatVideo
 from yolo_training.Detector import detect_raw_image
 import csv
+from sklearn.linear_model import LogisticRegression
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
 # https://blogs.oracle.com/meena/cat-face-detection-using-opencv
@@ -90,7 +91,7 @@ def create_data_for_model():
     """
     y_values = []
     files_seconds = []
-    with open('labeled_results.csv', 'r') as file:
+    with open('labeled_results_test.csv', 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             #process all frames that have cats in them
@@ -101,29 +102,47 @@ def create_data_for_model():
     for (filename,t) in files_seconds:
         cat=CatVideo("./cat_videos_1/"+filename)
         frame=cat.get_frame_time(t)
-        img, cats, cats_ext, eyes = detect_cat(frame)
-        print(detect_raw_image(frame))
+        #haarcascade = img, cats, cats_ext, eyes = detect_cat(frame)
+        YOLO_frames = detect_raw_image(frame)
+        eyes = []
+        cats_ext = []
+        for YOLO_frame in YOLO_frames:
+            x1, y1, x2, y2, c, conf = YOLO_frame
+            if (c==3):
+                cats_ext.append(YOLO_frame)
+            if (c==0):
+                eyes.append(YOLO_frame)
         head_rat = 0
         eye_rat = 0
+        confidence_head = 0
+        sharpness = 0
         if len(cats_ext) > 0:
             print(t)
             print("Cat detected ^^")
-            box_cleaned = [(cats_ext[0][2], cats_ext[0][3]), (frame.shape[0], frame.shape[1])]
+            box_cleaned = [(cats_ext[0][2]-cats_ext[0][0], cats_ext[0][3]-cats_ext[0][1]), (frame.shape[0], frame.shape[1])]
             box = box_cleaned[0]
             frame_size = box_cleaned[1]
             box_area = box[0]*box[1]
             frame_area = frame_size[0]*frame_size[1]
             head_rat= box_area/frame_area
+            confidence_head = cats_ext[0][5]
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            sharpness = sharpness_score(gray_frame[cats_ext[0][1]:cats_ext[0][3],
+                                                    cats_ext[0][0]:cats_ext[0][2]])
+
 
         if len(eyes) > 1:
-            eye_dims = np.array([eye[2]*eye[3] for eye in eyes])
+            eye_dims = np.array([(eye[2]-eye[0])*(eye[3]-eye[1]) for eye in eyes])
             top_two_eyes = eye_dims[np.argsort(eye_dims)[-2:]]
             eye_rat = top_two_eyes[1]/top_two_eyes[0]
 
-        x_values.append((eye_rat, head_rat))
+        x_values.append([eye_rat, head_rat, confidence_head, sharpness])
+    return (x_values, y_values)
 
-    print(x_values)
-    return
+def return_weights(x, y):
+    model = LogisticRegression(random_state=0).fit(x, y)
+    # print(model.predict_proba(x))
+    return(model.coef_)
 
 if __name__ == "__main__":
     # test_video = CatVideo("videos/cat1.mp4")
@@ -137,4 +156,7 @@ if __name__ == "__main__":
     # ax[1].imshow(test_video.get_frame_num(chosen_image))
     # ax[1].set_title("Chosen")
     # ax[1].set_axis_off()
-    create_data_for_model()
+    x, y = create_data_for_model()
+    print(x)
+    print(y)
+    print(return_weights(x, y))
