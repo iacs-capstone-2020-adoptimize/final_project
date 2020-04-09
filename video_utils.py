@@ -140,16 +140,18 @@ class CatVideo:
         else:
             return raw_image.reshape((self.height, self.width, 3))
 
-    def get_random_frame(self, seed=None):
+    def get_random_frame(self, seed=None, num_tries=10):
         if seed is not None:
             np.random.seed(seed)
-        while True:
+        tries = 0
+        while num_tries is None or tries < num_tries:
+            tries += 1
             frame_time = np.random.random() * self.duration
             try:
                 frame = self.get_frame_time(frame_time)
             except ValueError:
                 pass
             else:
-                break
-        return frame_time, frame
+                return frame_time, frame
+        return None
 
