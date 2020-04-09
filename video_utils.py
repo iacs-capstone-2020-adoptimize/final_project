@@ -20,7 +20,7 @@ def get_frame_opencv(filename, frame_number):
     # status, frame = capture.read()
     for i in range(frame_number):
         capture.grab()
-    return capture.retrieve()
+    return capture.retrieve()[1]
 
 
 def get_all_frames_opencv(file):

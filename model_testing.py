@@ -6,7 +6,8 @@ so that we can compare the results.
 
 import os
 import pandas as pd
-from process_video import score_video, score_video_baseline, get_features, get_frame
+from process_video import score_video, score_video_baseline, get_features
+from video_utils import get_frame_opencv
 import re
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
@@ -46,7 +47,7 @@ def ab_test(userid, model_csv, output_filename):
 
         fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12.8, 4.8))
         plt.subplots_adjust(bottom=0.25)
-        ax[0].imshow(get_frame(f"{directory}/{video['video_name']}", frame_left))
+        ax[0].imshow(get_frame_opencv(f"{directory}/{video['video_name']}", frame_left))
         ax[0].set_title("Image 1")
         ax[0].set_axis_off()
 
@@ -55,7 +56,7 @@ def ab_test(userid, model_csv, output_filename):
             lambda event: clicked_image(event, video["video_name"],
                                         "baseline_model" if random_side == 0 else "developed_model")
         )
-        ax[1].imshow(get_frame(f"{directory}/{video['video_name']}", frame_right))
+        ax[1].imshow(get_frame_opencv(f"{directory}/{video['video_name']}", frame_right))
         ax[1].set_title("Image 2")
         ax[1].set_axis_off()
 
