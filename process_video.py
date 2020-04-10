@@ -84,6 +84,7 @@ def detect_cat(img):
     eyes = eye_cascade.detectMultiScale(gray, scaleFactor=SF, minNeighbors = N)
     return (img, cats, cats_ext, eyes)
 
+
 def create_data_for_model():
     """
     Creates the data points to put into the logistic regression model.
@@ -137,4 +138,5 @@ if __name__ == "__main__":
     # ax[1].imshow(test_video.get_frame_num(chosen_image))
     # ax[1].set_title("Chosen")
     # ax[1].set_axis_off()
-    create_data_for_model()
+    # create_data_for_model()
+    pass

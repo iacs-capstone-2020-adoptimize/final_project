@@ -48,16 +48,7 @@ anchors_path = os.path.join(src_path, "keras_yolo3", "model_data", "yolo_anchors
 
 FLAGS = None
 
-yolo = YOLO(
-        **{
-            "model_path": model_weights,
-            "anchors_path": anchors_path,
-            "classes_path": model_classes,
-            "score": 0.25,  # Confidence Threshold
-            "gpu_num": 1,
-            "model_image_size": (416, 416),
-        }
-    )
+yolo = None
 
 
 def detect_raw_image(raw_image):
@@ -69,6 +60,18 @@ def detect_raw_image(raw_image):
     Returns:
         prediction: list of bounding boxes in format (xmin,ymin,xmax,ymax,class_id,confidence)
     """
+    global yolo
+    if yolo is None:
+        yolo = YOLO(
+            **{
+                "model_path": model_weights,
+                "anchors_path": anchors_path,
+                "classes_path": model_classes,
+                "score": 0.25,  # Confidence Threshold
+                "gpu_num": 1,
+                "model_image_size": (416, 416),
+            }
+        )
     image_obj = Image.fromarray(raw_image)
     prediction, _ = yolo.detect_image(image_obj, show_stats=False)
     return prediction
