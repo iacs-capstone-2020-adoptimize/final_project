@@ -3,6 +3,7 @@ initial_exploration/videos/*
 videos/*
 yolo_training/Data/Source_Images/CAT_**
 yolo_training/Data/data_train.txt
+yolo_training/Data/Model_Weights/trained_weights_final.h5
 yolo_training/2_Training/src/keras_yolo3/yolov3.weights
 yolo_training/2_Training/src/keras_yolo3/yolo.h5
 .DS_Store
