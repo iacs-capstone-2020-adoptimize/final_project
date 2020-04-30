@@ -1,3 +1,5 @@
+.ipynb_checkpoints/*
+image_segmentation/.ipynb_checkpoints/*
 initial_exploration/.ipynb_checkpoints/*
 initial_exploration/videos/*
 videos/*
