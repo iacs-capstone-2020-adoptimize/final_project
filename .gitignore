@@ -12,3 +12,4 @@ yolo_training/2_Training/src/keras_yolo3/yolo.h5
 .idea
 __pycache__
 *.pyc
+frames/*
