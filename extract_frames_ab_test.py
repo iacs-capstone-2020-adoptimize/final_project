@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 import numpy as np
 
-directory = "./videos"
-results_file = "./model_results.csv"
+directory = "data/videos"
+results_file = "ab_testing/frames_to_test/model_results.csv"
 
 """
 Example of what CSV looks like:

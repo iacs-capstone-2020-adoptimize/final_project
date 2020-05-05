@@ -11,8 +11,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Label some photos")
     parser.add_argument("-user", default="")
     parser.add_argument("-seed", type=int)
-    parser.add_argument("-input", default="videos", help="Directory containing mp4 files to ask user to evaluate")
-    parser.add_argument("-output", default="labeled_results.csv")
+    parser.add_argument("-input", default="data/videos", help="Directory containing mp4 files to ask user to evaluate")
+    parser.add_argument("-output", default="data/score.csv")
     args = parser.parse_args()
 
     np.random.seed(args.seed)

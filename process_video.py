@@ -7,9 +7,10 @@ from yolo_training.Detector import detect_raw_image
 import csv
 import cpbd
 
-lin_params = np.load("model_params/lin_params.npy")
-log_params = np.load("model_params/log_params.npy")
-log_params_2 = np.load("model_params/log_params_2.npy")
+
+lin_params = np.load("data/regression_parameter_results/lin_params_v0.npy")
+log_params = np.load("data/regression_parameter_results/log_params_any_features_v0.npy")
+log_params_2 = np.load("data/regression_parameter_results/log_params_all_features_v0.npy")
 
 
 # Citation: This code uses the following tutorial as a base and builds on top of it.
@@ -220,7 +221,7 @@ def detect_cat(img):
     return (img, cats, cats_ext, eyes)
 
 
-def create_data_for_model(file_name="labeled_results.csv"):
+def create_data_for_model(file_name):
     """
     Creates the data points to put into the logistic regression model.
     """
@@ -243,40 +244,4 @@ def create_data_for_model(file_name="labeled_results.csv"):
 
 
 if __name__ == "__main__":
-    # test_video = CatVideo("videos/cat1.mp4")
-    # processed_video = get_features(test_video.file)
-    # baseline_image = score_video_baseline(processed_video)
-    # chosen_image = score_video(processed_video)
-    # fig, ax = plt.subplots(1, 2, figsize=(12.8, 4.8))
-    # ax[0].imshow(test_video.get_frame_num(baseline_image))
-    # ax[0].set_title("Baseline")
-    # ax[0].set_axis_off()
-    # ax[1].imshow(test_video.get_frame_num(chosen_image))
-    # ax[1].set_title("Chosen")
-    # ax[1].set_axis_off()
-    # for i in range(1, 80):
-    #     np.save("video_features/cat{}".format(i), get_features_video("videos/cat{}.mp4".format(i)))
-    baseline_model_output = []
-    lin_model_output = []
-    log_model_output = []
-    log_model_2_output = []
-    for i in range(31, 80):
-        features = np.load("video_features/cat{}.npy".format(i))
-        if len(features) >= 1:
-            baseline_model_output.append(["cat{}.mp4".format(i),
-                                          score_video_baseline(features)])
-            lin_model_output.append(["cat{}.mp4".format(i),
-                                     score_video_lin(features)])
-            log_model_output.append(["cat{}.mp4".format(i),
-                                     score_video_log(features)])
-            log_model_2_output.append(["cat{}.mp4".format(i),
-                                     score_video_log_2(features)])
-    import csv
-    with open("model_results/baseline_model.csv", "a") as out_file:
-        csv.writer(out_file).writerows(baseline_model_output)
-    with open("model_results/lin_model.csv", "a") as out_file:
-        csv.writer(out_file).writerows(lin_model_output)
-    with open("model_results/log_model.csv", "a") as out_file:
-        csv.writer(out_file).writerows(log_model_output)
-    with open("model_results/log_model_2.csv", "a") as out_file:
-        csv.writer(out_file).writerows(log_model_2_output)
+    pass
