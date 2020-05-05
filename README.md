@@ -13,6 +13,10 @@ For the ignite talk, while the PDF file is uploaded to this repo, see [this link
 2. Create a directory in the root called `videos`. This is git-ignored to prevent adding large files into our git history, which would otherwise bloat our repository. Add all cat videos into this folder. They should be named with the convention "cat{number}.mp4".
 3. Run `pip install -r requirements.txt`. This should download all requirements necessary to run any script in this repository's subdirectories.
 
+# Scripts
+
+# Data
+Outputs and data for any of our models or scripts can be found here. The `ab_testing` folder contains all of the data extracted from `extract_frames_ab_test.py`
 
 # YOLO
 We're currently looking into using the YOLO model for object detection, training it to detect a cat's eyes, ears, and mouth.
