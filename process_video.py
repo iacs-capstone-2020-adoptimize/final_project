@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata
-from scipy.special import softmax
 from video_utils import CatVideo
 from yolo_training.Detector import detect_raw_image
 import csv
+import cpbd
 
 lin_params = np.load("model_params/lin_params.npy")
 log_params = np.load("model_params/log_params.npy")
@@ -27,7 +27,18 @@ def run_cascade_cat_ext(gray_img):
 
 
 def sharpness_score(gray_img):
-    return cv2.Laplacian(gray_img, ddepth=3, ksize=3).var()
+    # return cv2.Laplacian(gray_img, ddepth=3, ksize=3).var()
+    return cpbd.compute(gray_img)
+
+
+def get_head_distance(head_pixels, frame_shape):
+    """Assuming head_pixels = (ximn, ymin, xmax, ymax)
+     and frame_shape=(rows, columns)"""
+    head_center = ((head_pixels[0] + head_pixels[2]) / 2 / frame_shape[1],
+                   (head_pixels[1] + head_pixels[3]) / 2 / frame_shape[0])
+    center = (0.5, 0.5)
+    return np.linalg.norm(np.subtract(head_center, center))
+
 
 
 # def get_features(filename, sample_rate=10, output_frames=False):
@@ -122,6 +133,7 @@ def get_features_frame(frame):
     head_size, eye_ratio, ear_ratio = 0, 0, 0
     conf_eye_0, conf_eye_1, conf_nose, conf_ear_0, conf_ear_1, conf_head \
         = 0, 0, 0, 0, 0, 0
+    head_distance = 1
     sharpness = 0
     if len(heads) > 0:
         # print(t)
@@ -137,6 +149,7 @@ def get_features_frame(frame):
                                   best_head[0]:best_head[2]],
                                   cv2.COLOR_RGB2GRAY)
         sharpness = sharpness_score(gray_frame)
+        head_distance = get_head_distance(best_head, frame.shape)
 
     if len(eyes) == 1:
         conf_eye_0 = eyes[0][5]
@@ -164,7 +177,7 @@ def get_features_frame(frame):
             ear_ratio = 1 / ear_ratio
     return np.array([eye_ratio, head_size, ear_ratio, conf_head,
                      conf_eye_0, conf_eye_1, conf_ear_0, conf_ear_1,
-                     conf_nose, sharpness])
+                     conf_nose, sharpness, head_distance])
 
 
 def score_video_baseline(features):
@@ -172,7 +185,8 @@ def score_video_baseline(features):
 
 
 def score_video_log(features):
-    classes = softmax(features[:, 1:] @ log_params.T, axis=1)
+    classes = np.exp(features[:, 1:] @ log_params.T)
+    classes = classes / np.sum(classes, axis=1)
     return int(features[np.argmax(classes[:, 3] + classes[:, 4]), 0])
 
 
@@ -184,7 +198,8 @@ def score_video_log_2(features):
     reduced_features = features[np.all(features[:, 1:] != 0, axis=1)]
     if len(reduced_features) == 0:
         reduced_features = features
-    classes = softmax(reduced_features[:, 1:] @ log_params_2.T, axis=1)
+    classes = np.exp(reduced_features[:, 1:] @ log_params_2.T)
+    classes = classes / np.sum(classes, axis=1)
     return int(reduced_features[np.argmax(classes[:, 3] + classes[:, 4]), 0])
 
 
@@ -219,10 +234,10 @@ def create_data_for_model(file_name="labeled_results.csv"):
                 y_values.append(int(row[3]))
                 files_seconds.append((row[1], float(row[2])))
     x_values = []
-    for (filename, t, repeats) in files_seconds:
+    for (filename, t) in files_seconds:
         cat = CatVideo("./videos/" + filename)
         frame = cat.get_frame_time(t)
-        x_values.append(get_features_image(frame))
+        x_values.append(get_features_frame(frame))
 
     return np.array(x_values), np.array(y_values)
 
