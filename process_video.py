@@ -13,22 +13,7 @@ log_params = np.load("data/regression_parameter_results/log_params_any_features_
 log_params_2 = np.load("data/regression_parameter_results/log_params_all_features_v0.npy")
 
 
-# Citation: This code uses the following tutorial as a base and builds on top of it.
-# https://blogs.oracle.com/meena/cat-face-detection-using-opencv
-
-
-def run_cascade_cat_ext(gray_img):
-    cat_ext_cascade = cv2.CascadeClassifier(
-        "initial_exploration/haarcascade_frontalcatface_extended.xml"
-    )
-    SF = 1.05
-    N = 6
-    return cat_ext_cascade.detectMultiScale(gray_img, scaleFactor=SF,
-                                            minNeighbors=N)
-
-
 def sharpness_score(gray_img):
-    # return cv2.Laplacian(gray_img, ddepth=3, ksize=3).var()
     return cpbd.compute(gray_img)
 
 
@@ -39,69 +24,6 @@ def get_head_distance(head_pixels, frame_shape):
                    (head_pixels[1] + head_pixels[3]) / 2 / frame_shape[0])
     center = (0.5, 0.5)
     return np.linalg.norm(np.subtract(head_center, center))
-
-
-
-# def get_features(filename, sample_rate=10, output_frames=False):
-#     video = CatVideo(filename)
-#     # Images for each frame where head detected; only returned if output_frames
-#     head_frames = list()
-#     frame_count = 0  # Total number of frames
-#     cat_detected_frames = list()  # Frames in which cat head detected
-#     cat_head_location = list()
-#     # Of cat heads detected, variance of Laplacian inside box with head
-#     sharpness = list()
-#     # Of cat heads detected, ratio of cat head size to frame size
-#     head_ratio = list()
-#
-#     for frame in video.iter_all_frames():
-#         if frame_count % sample_rate == 0:
-#             # Be careful! cv2 has default BGR; CatVideo has default RGB
-#             gray_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-#             cats_found = run_cascade_cat_ext(gray_frame)
-#             if len(cats_found) >= 1:
-#                 if output_frames:
-#                     head_frames.append(frame)
-#                 cat_detected_frames.append(frame_count)
-#                 cat_head_location.append(cats_found[0])
-#                 x, y, w, h = cats_found[0]  # Location of first cat head
-#                 head_ratio.append(w * h / (frame.shape[0] * frame.shape[1]))
-#                 sharpness.append(sharpness_score(gray_frame[y:y + h, x:x + w]))
-#         frame_count += 1
-#     output = {
-#         "frame_count": frame_count, "cat_detected_frames": cat_detected_frames,
-#         "cat_head_location": cat_head_location, "sharpness": sharpness,
-#         "head_ratio": head_ratio
-#     }
-#     if output_frames:
-#         output["head_frames"] = head_frames
-#     return output
-#
-#
-# def score_video(processed_video):
-#     """
-#     Returns the frame number of the best picture as determined by our
-#     developed model.
-#     """
-#     if len(processed_video["cat_detected_frames"]) == 0:
-#         raise ValueError("No cats found")
-#     # Of the frames where a cat head was detected
-#     # get the one that scored highest
-#     return processed_video["cat_detected_frames"][np.argmax(
-#         rankdata(-np.abs(np.subtract(processed_video["head_ratio"], 0.05)))
-#         + rankdata(processed_video["sharpness"])
-#     )]
-#
-#
-# def score_video_baseline(processed_video):
-#     """
-#     Returns the frame number for baseline model.
-#     """
-#     if len(processed_video["cat_detected_frames"]) == 0:
-#         raise ValueError("No cats found")
-#     return processed_video["cat_detected_frames"][
-#         np.random.randint(len(processed_video["cat_detected_frames"]))
-#     ]
 
 
 def get_features_video(filename, sample_rate=10):
@@ -202,23 +124,6 @@ def score_video_log_2(features):
     classes = np.exp(reduced_features[:, 1:] @ log_params_2.T)
     classes = classes / np.sum(classes, axis=1)
     return int(reduced_features[np.argmax(classes[:, 3] + classes[:, 4]), 0])
-
-
-def detect_cat(img):
-    cat_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_frontalcatface.xml')
-    cat_ext_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_frontalcatface_extended.xml')
-    eye_cascade = cv2.CascadeClassifier('initial_exploration/haarcascade_eye.xml')
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # This function returns tuple rectangle starting coordinates x,y, width, height
-    scale_factor = 1.05
-    neighbors = 6
-    cats = cat_cascade.detectMultiScale(gray, scaleFactor=scale_factor,
-                                        minNeighbors=neighbors)
-    cats_ext = cat_ext_cascade.detectMultiScale(gray, scaleFactor=scale_factor,
-                                                minNeighbors=neighbors)
-    eyes = eye_cascade.detectMultiScale(gray, scaleFactor=scale_factor,
-                                        minNeighbors=neighbors)
-    return (img, cats, cats_ext, eyes)
 
 
 def create_data_for_model(file_name):
