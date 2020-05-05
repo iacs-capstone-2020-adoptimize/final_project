@@ -81,7 +81,7 @@ def extract_frames_from_label_data(label_data_file_path):
         frame_time = row[2]
         video = row[1]
         frame_time_norm = frame_time.replace(".", "_")
-        frame_filepath = f"data/frames{video_name}_{frame_time_norm}.png"
+        frame_filepath = f"data/frames/{video_name}_{frame_time_norm}.png"
         if os.path.exists(frame_file_path):
             continue
         frame = CatVideo(f"data/videos/{video}").get_frame_time(frame_time)
