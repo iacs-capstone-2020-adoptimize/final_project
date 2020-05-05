@@ -13,8 +13,10 @@ For the ignite talk, while the PDF file is uploaded to this repo, see [this link
 2. Create a directory in the root called `videos`. This is git-ignored to prevent adding large files into our git history, which would otherwise bloat our repository. Add all cat videos into this folder. They should be named with the convention "cat{number}.mp4".
 3. Run `pip install -r requirements.txt`. This should download all requirements necessary to run any script in this repository's subdirectories.
 
-# Scripts
+# CLI Scripts
+To label the videos, run `label_quality.py`. There are several args: user, seed, input, output. For the user, input your name. There will be a default random seed, as well as a default input, which draws from  `data/videos`, assuming that you execute from the root directory. Save the output file to `data/regression_training.csv`.
 
+For blind testing of model performance, you can first run `extract_frames_ab_test.py` to prepare the frames. Afterwards, run `model_performance_testing.py`.
 
 # Data
 Outputs and data for any of our models or scripts can be found here. The `ab_testing` folder contains all of the data extracted from `extract_frames_ab_test.py`
