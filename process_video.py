@@ -141,7 +141,7 @@ def create_data_for_model(file_name):
                 files_seconds.append((row[1], float(row[2])))
     x_values = []
     for (filename, t) in files_seconds:
-        cat = CatVideo("./videos/" + filename)
+        cat = CatVideo("data/videos/" + filename)
         frame = cat.get_frame_time(t)
         x_values.append(get_features_frame(frame))
 
