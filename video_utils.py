@@ -2,7 +2,9 @@ import cv2
 import ffmpeg
 import numpy as np
 import re
-
+from PIL import Image
+import csv
+import os
 
 def get_frame(file, time, height=None, width=None):
     out, err = ffmpeg.input(file, ss=str(time), t=0).output(
@@ -71,6 +73,19 @@ def iter_all_frames_ffmpeg(file, vsync=0):
         else:
             yield np.frombuffer(in_bytes, np.uint8).reshape((height, width, 3))
 
+def extract_frames_from_label_data(label_data_file_path):
+    file = open(label_data_file_path)
+    reader = csv.reader(file, delimiter=",")
+    for row in reader:
+        video_name = row[1].split(".mp4")[0]
+        frame_time = row[2]
+        video = row[1]
+        frame_time_norm = frame_time.replace(".", "_")
+        frame_filepath = f"data/frames{video_name}_{frame_time_norm}.png"
+        if os.path.exists(frame_file_path):
+            continue
+        frame = CatVideo(f"data/videos/{video}").get_frame_time(frame_time)
+        frame_image = Image.fromarray(frame).save(frame_filepath)
 
 class CatVideo:
     def __init__(self, file, vsync=0, loglevel="error"):
@@ -155,3 +170,9 @@ class CatVideo:
                 return frame_time, frame
         return None
 
+
+"""
+Run this to grab all frames that we've scored.
+"""
+if __name__ == "__main__":
+    extract_frames_from_label_data("data/regression_training/score_v2.csv")
