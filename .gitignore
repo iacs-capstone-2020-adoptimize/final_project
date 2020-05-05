@@ -3,6 +3,8 @@ image_segmentation/.ipynb_checkpoints/*
 initial_exploration/.ipynb_checkpoints/*
 initial_exploration/videos/*
 videos/*
+data/videos/*
+data/frames/*
 yolo_training/Data/Source_Images/CAT_**
 yolo_training/Data/data_train.txt
 yolo_training/Data/Model_Weights/trained_weights_final.h5
