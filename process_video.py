@@ -8,10 +8,10 @@ import csv
 import cpbd
 
 
-lin_params = np.load("data/regression_parameter_results/lin_params_v0.npy")
-log_params = np.load("data/regression_parameter_results/log_params_any_features_v0.npy")
-log_params_2 = np.load("data/regression_parameter_results/log_params_all_features_v0.npy")
-
+# lin_params = np.load("data/regression_parameter_results/lin_params_v0.npy")
+# log_params = np.load("data/regression_parameter_results/log_params_any_features_v0.npy")
+# log_params_2 = np.load("data/regression_parameter_results/log_params_all_features_v0.npy")
+#
 
 def sharpness_score(gray_img):
     return cpbd.compute(gray_img)
@@ -26,16 +26,20 @@ def get_head_distance(head_pixels, frame_shape):
     return np.linalg.norm(np.subtract(head_center, center))
 
 
-def get_features_video(filename, sample_rate=10):
+def get_features_video(filename, sample_rate=10, return_frames=False):
     video = CatVideo(filename)
     cat_frames = list()
+    image_data = list()
     for i, frame in enumerate(video.iter_all_frames()):
         if i % sample_rate == 0:
             features = get_features_frame(frame)
             if np.any(features != 0):
                 cat_frames.append(np.insert(features, 0, i))
-    return np.asarray(cat_frames)
-
+            image_data.append(frame)
+    if return_frames:
+        return np.asarray(cat_frames), image_data
+    else:
+        return np.asarray(cat_frames)
 
 def get_features_frame(frame):
     features_detected = detect_raw_image(frame)
@@ -149,4 +153,4 @@ def create_data_for_model(file_name):
 
 
 if __name__ == "__main__":
-    pass
+    get_features_video_with_numpy_image("/data/videos/cat66.mp4")
