@@ -8,10 +8,9 @@ import csv
 import cpbd
 
 
-# lin_params = np.load("data/regression_parameter_results/lin_params_v0.npy")
-# log_params = np.load("data/regression_parameter_results/log_params_any_features_v0.npy")
-# log_params_2 = np.load("data/regression_parameter_results/log_params_all_features_v0.npy")
-#
+log_params = np.loadtxt("data/regression_parameter_results/log_params_any_features_v1.txt")
+log_params_2 = np.loadtxt("data/regression_parameter_results/log_params_all_features_v1.txt")
+
 
 def sharpness_score(gray_img):
     return cpbd.compute(gray_img)
@@ -29,17 +28,21 @@ def get_head_distance(head_pixels, frame_shape):
 def get_features_video(filename, sample_rate=10, return_frames=False):
     video = CatVideo(filename)
     cat_frames = list()
+    frame_list = list()
     image_data = list()
     for i, frame in enumerate(video.iter_all_frames()):
         if i % sample_rate == 0:
             features = get_features_frame(frame)
-            if np.any(features != 0):
-                cat_frames.append(np.insert(features, 0, i))
+            if np.any(features[3:9] != 0):
+                cat_frames.append(features)
+                frame_list.append(i)
             image_data.append(frame)
+    frame_list = np.array(frame_list).reshape((-1, 1))
     if return_frames:
-        return np.asarray(cat_frames), image_data
+        return np.hstack((cat_frames, frame_list)), image_data
     else:
-        return np.asarray(cat_frames)
+        return np.hstack((cat_frames, frame_list))
+
 
 def get_features_frame(frame):
     features_detected = detect_raw_image(frame)
@@ -108,26 +111,22 @@ def get_features_frame(frame):
 
 
 def score_video_baseline(features):
-    return int(np.random.choice(features[:, 0]))
+    return int(np.random.choice(features[:, -1]))
 
 
 def score_video_log(features):
-    classes = np.exp(features[:, 1:] @ log_params.T)
-    classes = classes / np.sum(classes, axis=1)
-    return int(features[np.argmax(classes[:, 3] + classes[:, 4]), 0])
-
-
-def score_video_lin(features):
-    return int(features[np.argmax(features[:, 1:] @ lin_params), 0])
+    classes = np.exp(features[:, :-1] @ log_params.T)
+    classes = classes / np.sum(classes, axis=1).reshape((-1, 1))
+    return int(features[np.argmax(classes[:, 3] + classes[:, 4]), -1])
 
 
 def score_video_log_2(features):
-    reduced_features = features[np.all(features[:, 1:] != 0, axis=1)]
+    reduced_features = features[np.all(features[:, [3, 4, 6, 8]] != 0, axis=1)]
     if len(reduced_features) == 0:
-        reduced_features = features
-    classes = np.exp(reduced_features[:, 1:] @ log_params_2.T)
-    classes = classes / np.sum(classes, axis=1)
-    return int(reduced_features[np.argmax(classes[:, 3] + classes[:, 4]), 0])
+        return score_video_log(features)
+    classes = np.exp(reduced_features[:, :-1] @ log_params_2.T)
+    classes = classes / np.sum(classes, axis=1).reshape((-1, 1))
+    return int(reduced_features[np.argmax(classes[:, 3] + classes[:, 4]), -1])
 
 
 def create_data_for_model(file_name):
@@ -153,4 +152,8 @@ def create_data_for_model(file_name):
 
 
 if __name__ == "__main__":
-    get_features_video_with_numpy_image("/data/videos/cat66.mp4")
+    for i in range(1, 80):
+        filename = "data/videos/cat{}.mp4".format(i)
+        features = get_features_video(filename)
+        np.save("data/video_features/cat{}".format(i), features)
+        print(i)
