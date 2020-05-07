@@ -171,8 +171,10 @@ class CatVideo:
         return None
 
 
-"""
-Run this to grab all frames that we've scored.
-"""
 if __name__ == "__main__":
-    extract_frames_from_label_data("data/regression_training/score_v2.csv")
+    pass
+
+    """
+    Uncomment out and run this to grab all frames that we've scored.
+    """
+    # extract_frames_from_label_data("data/regression_training/score_v2.csv")
